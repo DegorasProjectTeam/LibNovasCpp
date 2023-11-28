@@ -10,9 +10,11 @@
    http://www.usno.navy.mil/USNO/astronomical-applications
 */
 
-#ifndef _NOVAS_
-   #include "novas.h"
-#endif
+#include <math.h>
+
+#include "novas.h"
+#include "nutation.h"
+#include "novascon.h"
 
 /********iau2000a */
 

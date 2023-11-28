@@ -10,11 +10,16 @@
   http://www.usno.navy.mil/USNO/astronomical-applications
 */
 
-#ifndef _NOVAS_
-   #include "novas.h"
-#endif
-
 #include <math.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+#include "novas.h"
+#include "novascon.h"
+#include "nutation.h"
+#include "solarsystem.h"
 
 /*
    Global variables.
@@ -25,8 +30,6 @@
 
 static double PSI_COR = 0.0;
 static double EPS_COR = 0.0;
-
-
 
 /********app_star */
 
@@ -158,7 +161,6 @@ short int app_star (double jd_tt, cat_entry *star, short int accuracy,
 
 short int virtual_star (double jd_tt, cat_entry *star,
                         short int accuracy,
-
                         double *ra, double *dec)
 /*
 ------------------------------------------------------------------------
@@ -283,7 +285,6 @@ short int virtual_star (double jd_tt, cat_entry *star,
 /********astro_star */
 
 short int astro_star (double jd_tt, cat_entry *star, short int accuracy,
-
                       double *ra, double *dec)
 /*
 ------------------------------------------------------------------------
@@ -2283,19 +2284,20 @@ short int equ2ecl_vec (double jd_tt, short int coord_sys,
          }
          break;
 
-      case 2:             /* Input: ICRS */
-         frame_tie (pos1,1, pos0);
+    case 2:             /* Input: ICRS */
+        frame_tie (pos1,1, pos0);
 
-         if (ob2000 == 0.0)
-         {
-            e_tilt (T0,accuracy, &oblm,&w,&x,&y,&z);
-            ob2000 = oblm;
-         }
-         obl = ob2000 * DEG2RAD;
-         break;
+        if (ob2000 == 0.0)
+        {
+        e_tilt (T0,accuracy, &oblm,&w,&x,&y,&z);
+        ob2000 = oblm;
+        }
+        obl = ob2000 * DEG2RAD;
+        break;
 
-      default:
-         return (error = 1);
+    default:
+        error = 1;
+        return (error);
    }
 
 /*
@@ -5178,7 +5180,6 @@ short int geo_posvel (double jd_tt, double delta_t, short int accuracy,
          vel[1] = 0.0;
          vel[2] = 0.0;
          return (error = 0);
-         break;
 
 /*
    Other two cases: Get geocentric position and velocity vectors of

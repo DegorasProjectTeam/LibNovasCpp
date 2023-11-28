@@ -10,7 +10,6 @@
   http://www.usno.navy.mil/USNO/astronomical-applications
 */
 
-
 #ifndef _NOVAS_
    #include "novas.h"
 #endif

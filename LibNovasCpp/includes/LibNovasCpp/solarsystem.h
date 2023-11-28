@@ -10,8 +10,8 @@
   http://www.usno.navy.mil/USNO/astronomical-applications
 */
 
-#ifndef _SOLSYS_
-   #define _SOLSYS_
+#ifndef SOLARSYSTEM_H
+#define SOLARSYSTEM_H
 
 /*
    Function prototypes
@@ -24,6 +24,5 @@
    short int solarsystem_hp (double tjd[2], short body, short origin,
 
                              double *position, double *velocity);
-
 
 #endif

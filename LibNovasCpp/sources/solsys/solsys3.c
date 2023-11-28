@@ -10,13 +10,10 @@
   http://www.usno.navy.mil/USNO/astronomical-applications
 */
 
-
-#ifndef _NOVAS_
-   #include "novas.h"
-#endif
-
 #include <math.h>
 
+#include "novas.h"
+#include "novascon.h"
 
 /*
    Additional function prototype.

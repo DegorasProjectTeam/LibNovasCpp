@@ -10,8 +10,8 @@
   http://www.usno.navy.mil/USNO/astronomical-applications
 */
 
-#ifndef _CONSTS_
-   #define _CONSTS_
+#ifndef NOVASCON_H
+#define NOVASCON_H
 
    extern const short int FN1;
    extern const short int FN0;

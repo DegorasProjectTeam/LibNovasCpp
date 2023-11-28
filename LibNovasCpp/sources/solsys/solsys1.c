@@ -11,13 +11,10 @@
 */
 
 
-#ifndef _NOVAS_
-   #include "novas.h"
-#endif
 
-#ifndef _EPHMAN_
-   #include "eph_manager.h"
-#endif
+
+#include "novas.h"
+#include "eph_manager.h"
 
 
 /********solarsystem */

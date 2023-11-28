@@ -10,9 +10,10 @@
   http://www.usno.navy.mil/USNO/astronomical-applications
 */
 
-#ifndef _EPHMAN_
-   #include "eph_manager.h"
-#endif
+#include <math.h>
+#include <stdlib.h>
+
+#include "eph_manager.h"
 
 /*
    Define global variables
