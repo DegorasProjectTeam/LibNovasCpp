@@ -12,12 +12,9 @@ Fork from: https://github.com/indigo-astronomy/novas
 
 Adapted and refactorized to be used with C++ modern compilers and CMake. 
 
-This fork has been created in order to facilitate the integration of NOVAS into the modern DegorasSLR (DPSLR) library for calculations related to Satellite Laser Ranging. This library, based on C++17, is used to control the SFEL SLR station of the Royal Institute and Observatory of the Spanish Navy.
+This fork has been created in order to facilitate the integration of NOVAS into the modern DegorasSLR (DPSLR) library for calculations related to Satellite Laser Ranging. This library, based on C++17, is used to control the SFEL SLR station of the Royal Institute and Observatory of the Spanish Navy (ROA).
 
-Ángel Vera Herrera
-avera@roa.es
-Computer Engineer
-Royal Institute and Observatory of the Spanish Navy.
+Ángel Vera Herrera - avera@roa.es - Computer Engineer - ROA.
 
 November - 2023
 
