@@ -8,7 +8,7 @@ Version C3.1 - March 2011
 
 ************************************************************************************************************************
 
-Forf from: https://github.com/indigo-astronomy/novas
+Fork from: https://github.com/indigo-astronomy/novas
 
 Adapted and refactorized to be used with C++ modern compilers and CMake. 
 
