@@ -1,6 +1,6 @@
 # Folders.
 *build*/
-product*/
+*product*/
 
 # User config
 CMakeLists.txt.user
