@@ -58,4 +58,8 @@ The original examples has been replaced with modified C++ versions. Not all exam
 
 Some utilities has been added to the project as a more complex examples for testing.
 
+- TODOs.
+
+It would be interesting to create a complete wrapper of the library in C++ within a namespace, so that it is not necessary to use C syntax externally when calling functions.
+
 ************************************************************************************************************************
