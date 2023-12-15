@@ -36,7 +36,7 @@ At this momment, this fork has been tested in Windows 10 with MinGW 8.1 for 64 b
 
 In Windows I recommend use a prepared IDE for compiling, for example VSCode or QTCreator. Then, open the project in the IDE (the CMakeList) and compile the library. Also you can deploy (install) the library.
 
-In Linux, you can create a build directory (for example "build_debug_gcc64"). Then, call to CMake and then, "make --install" to build and install the library.
+In Linux, you can create a build directory (for example "build_debug_gcc64"). Then, call to CMake and then, "make install" to build and install the library.
   
 - About solarsystem versions.
 
