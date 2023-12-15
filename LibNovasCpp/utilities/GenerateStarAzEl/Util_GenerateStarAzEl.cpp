@@ -1,5 +1,5 @@
 /*
-
+ * This util was created originally in C and is not ported to C++ yet.
 */
 
 #include <string.h>

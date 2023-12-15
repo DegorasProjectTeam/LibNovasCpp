@@ -90,6 +90,7 @@ set(SOLSYS2 ${CMAKE_SOURCE_DIR}/sources/solsys/solsys2.c)
 set(SOLSYS3 ${CMAKE_SOURCE_DIR}/sources/solsys/solsys3.c)
 
 # Configure the SOLAR SYSTEM version to be used.
+# NOTE: Remember compile Fortran code if you want to use full accuracy mode.
 set(SOLSYS_SOURCE ${SOLSYS3})
 
 # Get the headers, sources and template files.
@@ -100,7 +101,8 @@ set(SOURCES ${SOURCES} ${SOLSYS_SOURCE})
 # Add definitions and the library.
 string(TOUPPER ${LIB_FULL_NAME} LIB_FULL_NAME_UPPER)
 add_definitions(-D${LIB_FULL_NAME_UPPER}_LIBRARY)
-add_library(${LIB_FULL_NAME} SHARED ${SOURCES} ${HEADERS})
+add_library(${LIB_FULL_NAME} SHARED ${SOURCES} ${HEADERS}
+    includes/LibNovasCpp/novascpp.h)
 target_compile_definitions(${LIB_FULL_NAME} PRIVATE -D${LIB_FULL_NAME_UPPER}_LIBRARY)
 
 # Configure the compilers.

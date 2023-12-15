@@ -13,7 +13,7 @@
 #include <vector>
 #include <chrono>
 
-#include "LibNovasCpp/novas.h"
+#include "LibNovasCpp/novascpp.h"
 
 int main()
 {
@@ -68,26 +68,26 @@ int main()
     double jd_utc, jd_tt, jd_ut1, delta_t, rat, dect,  zd, rar, decr, az, el;
 
     // NOVAS data structs.
-    on_surface geo_loc;
-    cat_entry star;
+    novas::on_surface geo_loc;
+    novas::cat_entry star;
 
     // Start measuring time
     auto start_meas = std::chrono::steady_clock::now();
 
     // Establish time arguments.
     double fractional_part = (static_cast<double>(min)/1440.0) + (sec / 86400.0);
-    jd_utc = julian_date(year,month,day,hour) + fractional_part;
+    jd_utc = novas::julian_date(year,month,day,hour) + fractional_part;
     jd_tt = jd_utc + (static_cast<double>(leap_secs) + 32.184) / 86400.0; // TT = UTC + incrementAT + 32.184
     jd_ut1 = jd_utc + ut1_utc / 86400.0;
     delta_t = 32.184 + leap_secs - ut1_utc; // TT - UT1 in seconds.
 
     // Make the observer (on_surface) structure.
-    make_on_surface (latitude,longitude,height,temperature,pressure, &geo_loc);
+    novas::make_on_surface (latitude,longitude,height,temperature,pressure, &geo_loc);
 
     // Make the star catalog entry containing the ICRS position and motion of the star.
     std::vector<char> name_ptr(star_name.c_str(), star_name.c_str() + star_name.size() + 1);
     std::vector<char> cat_ptr(catalog_name.c_str(), catalog_name.c_str() + catalog_name.size() + 1);
-    make_cat_entry(name_ptr.data(), cat_ptr.data(), num, ra, dec, pm_ra, pm_dec, parallax, rad_vel, &star);
+    novas::make_cat_entry(name_ptr.data(), cat_ptr.data(), num, ra, dec, pm_ra, pm_dec, parallax, rad_vel, &star);
 
     // Apparent and topocentric place of star.
     if ((error = topo_star(jd_tt,delta_t,&star,&geo_loc, accuracy, &rat, &dect)) != 0)
@@ -97,7 +97,7 @@ int main()
     }
 
     // Transform the coordinates to az and zenith distance.
-    equ2hor(jd_ut1, delta_t, accuracy, x_pole, y_pole, &geo_loc, rat, dect, 2, &zd, &az, &rar, &decr);
+    novas::equ2hor(jd_ut1, delta_t, accuracy, x_pole, y_pole, &geo_loc, rat, dect, 2, &zd, &az, &rar, &decr);
 
     // Get the elevation.
     el = 90.0 - zd;
