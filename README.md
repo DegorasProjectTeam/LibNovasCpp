@@ -22,17 +22,27 @@ November - 2023
 
 IMPORTANT NOTES:
 
+- Usage.
+
+This project is prepared to be used with CMake >= 3.21 and to be compiled with modern C++ compilers. 
+
+The CMakeList is a little complex but it is prepared to be configured in several aspect, for example the build configuration or the install directory (read the comments in the file). Remember changue the build configuration to release.
+
 - About compilers.
 
-At this momment, this fork has been tested with MinGW 8.1 for 64 bits and MSVC2019 for 64 bits, both under Windows 10.
+At this momment, this fork has been tested in Windows 10 with MinGW 8.1 for 64 bits and MSVC2019 for 64 bits; and in Ubuntu 22.04 with gcc 11.4.
 
+- Compiling the library.
+
+In Windows I recommend use a prepared IDE for compiling, for example VSCode or QTCreator. Then, open the project in the IDE (the CMakeList) and compile the library. Also you can deploy (install) the library.
+
+In Linux, you can create a build directory (for example "build_debug_gcc64"). Then, call to CMake and then, "make --install" to build and install the library.
+  
 - About solarsystem versions.
 
 You must select in the CMakeLists the <SOLSYS_SOURCE> specific file to be used for compiling, between <solsys1.c>, <solsys2.c> and <solsys3.c> source files. 
 
-By default <solsys3.c> is used, so only reduced-accuracy mode can be used for calculations. However, this mode is enought for a lot of engineering applications. 
-
-Remember that using the reduced-accuracy mode with this version of solarsystem  for the in the computation of apparent places of stars, it should contribute less than 1.5 milliarcseconds of error (this assessment applies to the interval 1800–2050).
+By default <solsys3.c> is used, so only reduced-accuracy mode can be used for calculations. However, this mode is enought for a lot of engineering applications. Remember that using the reduced-accuracy mode with this version of solarsystem  for the in the computation of apparent places of stars, it should contribute less than 1.5 milliarcseconds of error (this assessment applies to the interval 1800–2050). If you want to use the full-accuracy mode, remember that you must compile the Fortran routines.
 
 See the NOVAS_C3.1_Guide.pdf for more detailed explanation.
 
