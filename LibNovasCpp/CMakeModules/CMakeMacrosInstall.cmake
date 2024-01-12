@@ -1,24 +1,24 @@
 # **********************************************************************************************************************
-# Updated 14/12/2023
+# Updated 12/01/2024
 # **********************************************************************************************************************
 
 # **********************************************************************************************************************
 
-MACRO(macro_prepare_install_dir base_dir bin_dir lib_dir sha_dir inc_dir)
+MACRO(macro_setup_install_dir base_dir bin_dir lib_dir sha_dir inc_dir)
 
     # Log
-    message(STATUS "${Green}Preparing the installation directory... ${ColourReset}")
+    message(STATUS "Preparing the installation directory... ")
 
     # Resolve the path
-    get_filename_component(RESOLVED_PATH "${base_dir}" REALPATH)
+    get_filename_component(real_base_dir "${base_dir}" REALPATH)
 
     # Set the installation path.
-    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT OR ${FORCE_INSTALL_DIR})
-        message(STATUS "${Green}  Force the base installation directory: ${RESOLVED_PATH} ${ColourReset}")
-        set(CMAKE_INSTALL_PREFIX ${RESOLVED_PATH} CACHE PATH "..." FORCE)
+    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT OR ${MODULES_GLOBAL_FORCE_INSTALL_DIR})
+        message(STATUS "  Force the base installation directory: ${RESOLVED_PATH}")
+        set(CMAKE_INSTALL_PREFIX ${real_base_dir} CACHE PATH "..." FORCE)
     endif()
 
-    message(STATUS "${Green}  Setting base installation directory: ${RESOLVED_PATH} ${ColourReset}")
+    message(STATUS "  Setting base installation directory: ${real_base_dir}")
 
     # Add properties for clean process.
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_INSTALL_PREFIX})
@@ -56,19 +56,19 @@ MACRO(macro_prepare_install_dir base_dir bin_dir lib_dir sha_dir inc_dir)
     set(${lib_dir} ${CMAKE_INSTALL_PREFIX}/lib/${COMP_N}-${ARCH}-${COMP_V}-${BUILD_TYPE})
     set(${sha_dir} ${CMAKE_INSTALL_PREFIX}/share/${COMP_N}-${ARCH}-${COMP_V}-${BUILD_TYPE})
     set(${inc_dir} ${CMAKE_INSTALL_PREFIX}/include)
-    
+
     # Specific SO configurations.        
     if(WIN32)
     #
     elseif(OS_NAME STREQUAL "Linux/Unix")
     
         # Update RPATH.
-        message(STATUS "${Green} "  Updating RPATH. ${ColourReset})
+        message(STATUS "  Updating RPATH...")
         
-         # use, i.e. don't skip the full RPATH for the build tree
+         # Use, i.e. don't skip the full RPATH for the build tree
         set(CMAKE_SKIP_BUILD_RPATH FALSE)
          
-        # when building, don't use the install RPATH already (but later on when installing).
+        # When building, don't use the install RPATH already (but later on when installing).
         set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
         set(CMAKE_INSTALL_RPATH ${INSTALL_BIN})
          
@@ -78,6 +78,13 @@ MACRO(macro_prepare_install_dir base_dir bin_dir lib_dir sha_dir inc_dir)
     else()
         message(FATAL_ERROR "  Operating system not supported by default.")
     endif()
+
+    # Logs.
+    message(STATUS "  Base dir:      ${real_base_dir}")
+    message(STATUS "  Binaries dir:  ${${bin_dir}}")
+    message(STATUS "  Libraries dir: ${${lib_dir}}")
+    message(STATUS "  Shared dir:    ${${sha_dir}}")
+    message(STATUS "  Includes dir:  ${${inc_dir}}")
 
 ENDMACRO()
 

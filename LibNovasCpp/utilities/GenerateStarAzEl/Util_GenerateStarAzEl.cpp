@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 
-#include "LibNovasCpp/novas.h"
+#include "LibNovasCpp/novascpp.h"
 
 #define MAX_STARS 256
 #define MAX_LINE_LENGTH 256
@@ -494,8 +494,8 @@ int main(int argc, char *argv[])
     size_t num_stars;
 
     // Novas structs.
-    on_surface geo_loc;
-    cat_entry cat_star;
+    novas::on_surface geo_loc;
+    novas::cat_entry cat_star;
 
     // Parse de configuration file.
     if(!parseStarAzElData(filename, &loc, &adj, &met, &obs, stars, &num_stars))
@@ -503,11 +503,11 @@ int main(int argc, char *argv[])
 
     // Establish start time.
     fractional_t = ((double)obs.start_min / 1440.0) + (obs.start_sec / 86400.0);
-    jd_utc_start = julian_date(obs.start_year,obs.start_month,obs.start_day,obs.start_hour) + fractional_t;
+    jd_utc_start = novas::julian_date(obs.start_year,obs.start_month,obs.start_day,obs.start_hour) + fractional_t;
 
     // Establish end time.
     fractional_t = ((double)obs.end_min / 1440.0) + (obs.end_sec / 86400.0);
-    jd_utc_end = julian_date(obs.end_year,obs.end_month,obs.end_day,obs.end_hour) + fractional_t;
+    jd_utc_end = novas::julian_date(obs.end_year,obs.end_month,obs.end_day,obs.end_hour) + fractional_t;
 
     // Get delta (Delta = TT - UT1 in seconds) and increment.
     delta_t = 32.184 + adj.leap_secs - adj.ut1_utc;

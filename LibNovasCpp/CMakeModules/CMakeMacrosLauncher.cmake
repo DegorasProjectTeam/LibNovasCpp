@@ -2,11 +2,16 @@
 # Updated 14/12/2023
 # **********************************************************************************************************************
 
+
 # **********************************************************************************************************************
 
-MACRO(macro_setup_launcher LAUNCHER_NAME)
+MACRO(macro_setup_launcher launcher_name lib_opt lib_deb)
 
-    message(STATUS "${Green}Preparing executable: ${LAUNCHER_NAME} ${ColourReset}")
+    # Combine all additional arguments into a single list of resources.
+    set(resources ${ARGN})
+
+    # Log.
+    message(STATUS "Setup executable: ${launcher_name}")
 
     # Link the current dirs.
     if (WIN32)
@@ -15,70 +20,69 @@ MACRO(macro_setup_launcher LAUNCHER_NAME)
         link_directories(${CMAKE_CURRENT_BINARY_DIR}/../lib)
     endif()
 
-    add_executable(${LAUNCHER_NAME} ${SOURCES} ${HEADERS} ${TEMPLTS} ${ALIAS} ${EXTERN} ${RESOURCES})
+    # Add the executable.
+    add_executable(${launcher_name} ${resources})
 
-    if(LIBRARIES)
-        message(STATUS "${Green}  Linking general libraries for the executable. ${ColourReset}")
-        target_link_libraries(${LAUNCHER_NAME} PRIVATE ${LIBRARIES})
-    endif()
-
-    if(LIBRARIES_OPTIMIZED)
-        message(STATUS "${Green}  Linking optimized libraries for the executable. ${ColourReset}")
-        foreach(LIBOPT ${LIBRARIES_OPTIMIZED})
-            target_link_libraries(${LAUNCHER_NAME} optimized ${LIBOPT})
-        endforeach(LIBOPT)
-    endif(LIBRARIES_OPTIMIZED)
-
-    if(LIBRARIES_DEBUG)
-        message(STATUS "${Green}  Linking debug libraries for the executable. ${ColourReset}")
-        foreach(LIBDEBUG ${LIBRARIES_DEBUG})
-            target_link_libraries(${LAUNCHER_NAME} debug ${LIBDEBUG})
-        endforeach(LIBDEBUG)
-    endif(LIBRARIES_DEBUG)
+    # Link the external libraries.
+    message(STATUS "  Linking optimized libraries: ${lib_opt}")
+    message(STATUS "  Linking debug libraries: ${lib_deb}")
+    target_link_libraries(${launcher_name} PRIVATE optimized "${lib_opt}" debug "${lib_deb}")
 
     # Set target properties.
-    message(STATUS "${Green}  Setting target properties. ${ColourReset}")
-    set_target_properties(${LAUNCHER_NAME} PROPERTIES PROJECT_LABEL "Launcher ${LAUNCHER_NAME}")
-    set_target_properties(${LAUNCHER_NAME} PROPERTIES DEBUG_OUTPUT_NAME "${LAUNCHER_NAME}${CMAKE_DEBUG_POSTFIX}")
-    set_target_properties(${LAUNCHER_NAME} PROPERTIES RELEASE_OUTPUT_NAME "${LAUNCHER_NAME}${CMAKE_RELEASE_POSTFIX}")
-    set_target_properties(${LAUNCHER_NAME} PROPERTIES RELWITHDEBINFO_OUTPUT_NAME "${LAUNCHER_NAME}${CMAKE_RELWITHDEBINFO_POSTFIX}")
-    set_target_properties(${LAUNCHER_NAME} PROPERTIES MINSIZEREL_OUTPUT_NAME "${LAUNCHER_NAME}${CMAKE_MINSIZEREL_POSTFIX}")
-    set_target_properties(${LAUNCHER_NAME} PROPERTIES FOLDER CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+    set_target_properties(${launcher_name} PROPERTIES PROJECT_LABEL "Launcher ${launcher_name}")
+    set_target_properties(${launcher_name} PROPERTIES DEBUG_OUTPUT_NAME "${launcher_name}${CMAKE_DEBUG_POSTFIX}")
+    set_target_properties(${launcher_name} PROPERTIES RELEASE_OUTPUT_NAME "${launcher_name}${CMAKE_RELEASE_POSTFIX}")
+    set_target_properties(${launcher_name} PROPERTIES RELWITHDEBINFO_OUTPUT_NAME "${launcher_name}${CMAKE_RELWITHDEBINFO_POSTFIX}")
+    set_target_properties(${launcher_name} PROPERTIES MINSIZEREL_OUTPUT_NAME "${launcher_name}${CMAKE_MINSIZEREL_POSTFIX}")
+    set_target_properties(${launcher_name} PROPERTIES FOLDER CMAKE_RUNTIME_OUTPUT_DIRECTORY)
 
 ENDMACRO()
 
 # **********************************************************************************************************************
 
-MACRO(macro_deploy_launcher LAUNCHER_NAME INSTALL_PATH)
+MACRO(macro_setup_launcher_deploy launcher_name lib_opt lib_deb install_path dependency_set)
 
-    message(STATUS "${Green}Preparing the deployment of the executable: ${LAUNCHER_NAME} ${ColourReset}")
+    # Combine all additional arguments into a single list of resources.
+    set(resources ${ARGN})
 
-    #Deploy binary files
-    install(TARGETS ${LAUNCHER_NAME}
-            RUNTIME DESTINATION ${INSTALL_PATH})
+    # Setup the launcher.
+    macro_setup_launcher("${launcher_name}" "${lib_opt}" "${lib_deb}" "${resources}")
 
-ENDMACRO()
-
-# **********************************************************************************************************************
-
-MACRO(macro_deploy_runtime_artifacts LAUNCHER_NAME INSTALL_PATH DEPENDENCY_SET)
-
-    message(STATUS "${Green}Preparing the runtime artifacts of the executable: ${LAUNCHER_NAME} ${ColourReset}")
+    #Deploy binary files.
+    message(STATUS "  Setup executable deployment...")
+    install(TARGETS ${launcher_name}
+            RUNTIME DESTINATION ${install_path})
 
     # Installation process into installation dir.
-    install(IMPORTED_RUNTIME_ARTIFACTS ${LAUNCHER_NAME}
-            RUNTIME_DEPENDENCY_SET ${DEPENDENCY_SET}
-            DESTINATION ${INSTALL_PATH})
+    message(STATUS "  Setup executable runtime artifacts...")
+    install(IMPORTED_RUNTIME_ARTIFACTS ${launcher_name}
+            RUNTIME_DEPENDENCY_SET ${dependency_set}
+            DESTINATION ${install_path})
 
 ENDMACRO()
 
 # **********************************************************************************************************************
 
-MACRO(macro_setup_deploy_launcher LAUNCHER_NAME INSTALL_PATH DEPENDENCY_SET)
+MACRO(macro_deploy_launcher launcher_name install_path)
 
-    macro_setup_launcher("${LAUNCHER_NAME}")
-    macro_deploy_launcher("${LAUNCHER_NAME}" "${INSTALL_PATH}")
-    macro_deploy_runtime_artifacts("${LAUNCHER_NAME}" "${INSTALL_PATH}" "${DEPENDENCY_SET}")
+    message(STATUS "Setup executable deployment: ${launcher_name}")
+
+    #Deploy binary files
+    install(TARGETS ${launcher_name}
+            RUNTIME DESTINATION ${install_path})
+
+ENDMACRO()
+
+# **********************************************************************************************************************
+
+MACRO(macro_deploy_runtime_artifacts launcher_name install_path dependency_set)
+
+    message(STATUS "Setup executable runtime artifacts: ${launcher_name}")
+
+    # Installation process into installation dir.
+    install(IMPORTED_RUNTIME_ARTIFACTS ${launcher_name}
+            RUNTIME_DEPENDENCY_SET ${dependency_set}
+            DESTINATION ${install_path})
 
 ENDMACRO()
 
