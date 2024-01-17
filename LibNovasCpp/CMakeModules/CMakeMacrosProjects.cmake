@@ -4,25 +4,6 @@
 
 # **********************************************************************************************************************
 
-MACRO(macro_cmakemodules_init)
-
-    # Includes.
-    include(CMakeMacrosInstall)
-    include(CMakeMacrosLauncher)
-    include(CMakeMacrosUtils)
-    include(CMakeMacrosGlobals)
-    include(CMakeMacrosLibraries)
-
-    # Default global variables values.
-    macro_global_set_show_externals(FALSE)
-    macro_global_set_force_install_dir(TRUE)
-    macro_global_set_install_ext_deps(FALSE)
-
-
-ENDMACRO()
-
-# **********************************************************************************************************************
-
 MACRO(macro_setup_base_project project_name project_version project_build_mode)
 
     # Check version.
@@ -65,6 +46,9 @@ MACRO(macro_setup_base_project project_name project_version project_build_mode)
     message(STATUS "  Build Archive: ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
     message(STATUS "  Build Library: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
     message(STATUS "  Build Runtime: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+    message(STATUS "  Force installation path: ${MODULES_GLOBAL_FORCE_INSTALL_DIR}")
+    message(STATUS "  Install external dependencies: ${MODULES_GLOBAL_INSTALL_EXT_DEPS}")
+    message(STATUS "  Install runtime artifacts: ${MODULES_GLOBAL_INSTALL_RUNTIME_ARTIFACTS}")
 
 ENDMACRO()
 

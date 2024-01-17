@@ -4,7 +4,7 @@
 
 # **********************************************************************************************************************
 
-MACRO(macro_setup_install_dir base_dir bin_dir lib_dir sha_dir inc_dir)
+MACRO(macro_setup_install_dir base_dir)
 
     # Log
     message(STATUS "Preparing the installation directory... ")
@@ -52,10 +52,10 @@ MACRO(macro_setup_install_dir base_dir bin_dir lib_dir sha_dir inc_dir)
     endif()
 
     # Define the install directories.
-    set(${bin_dir} ${CMAKE_INSTALL_PREFIX}/bin/${COMP_N}-${ARCH}-${COMP_V}-${BUILD_TYPE})
-    set(${lib_dir} ${CMAKE_INSTALL_PREFIX}/lib/${COMP_N}-${ARCH}-${COMP_V}-${BUILD_TYPE})
-    set(${sha_dir} ${CMAKE_INSTALL_PREFIX}/share/${COMP_N}-${ARCH}-${COMP_V}-${BUILD_TYPE})
-    set(${inc_dir} ${CMAKE_INSTALL_PREFIX}/include)
+    set(BIN_DIR ${CMAKE_INSTALL_PREFIX}/bin/${COMP_N}-${ARCH}-${COMP_V}-${BUILD_TYPE})
+    set(LIB_DIR ${CMAKE_INSTALL_PREFIX}/lib/${COMP_N}-${ARCH}-${COMP_V}-${BUILD_TYPE})
+    set(SHA_DIR ${CMAKE_INSTALL_PREFIX}/share/${COMP_N}-${ARCH}-${COMP_V}-${BUILD_TYPE})
+    set(INC_DIR ${CMAKE_INSTALL_PREFIX}/include)
 
     # Specific SO configurations.        
     if(WIN32)
@@ -70,7 +70,7 @@ MACRO(macro_setup_install_dir base_dir bin_dir lib_dir sha_dir inc_dir)
          
         # When building, don't use the install RPATH already (but later on when installing).
         set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-        set(CMAKE_INSTALL_RPATH ${INSTALL_BIN})
+        set(CMAKE_INSTALL_RPATH ${BIN_DIR})
          
         # Add the automatically determined parts of the RPATH which point to directories outside the build tree.
         set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
@@ -79,22 +79,57 @@ MACRO(macro_setup_install_dir base_dir bin_dir lib_dir sha_dir inc_dir)
         message(FATAL_ERROR "  Operating system not supported by default.")
     endif()
 
+    # Setup the global variables.
+    macro_global_set_install_bin_path(${BIN_DIR})
+    macro_global_set_install_lib_path(${LIB_DIR})
+    macro_global_set_install_share_path(${SHA_DIR})
+    macro_global_set_install_include_path(${INC_DIR})
+
     # Logs.
     message(STATUS "  Base dir:      ${real_base_dir}")
-    message(STATUS "  Binaries dir:  ${${bin_dir}}")
-    message(STATUS "  Libraries dir: ${${lib_dir}}")
-    message(STATUS "  Shared dir:    ${${sha_dir}}")
-    message(STATUS "  Includes dir:  ${${inc_dir}}")
+    message(STATUS "  Binaries dir:  ${BIN_DIR}")
+    message(STATUS "  Libraries dir: ${LIB_DIR}")
+    message(STATUS "  Shared dir:    ${SHA_DIR}")
+    message(STATUS "  Includes dir:  ${INC_DIR}")
 
 ENDMACRO()
 
 # **********************************************************************************************************************
 
+MACRO(macro_install_launcher launcher_name bin_dest)
+
+    # Log.
+    message(STATUS "Installing executable: ${launcher_name}")
+    message(STATUS "  Deployment destination: ${bin_dest}")
+
+    #Deploy binary files
+    install(TARGETS ${launcher_name}
+            RUNTIME DESTINATION ${bin_dest})
+
+ENDMACRO()
+
+# **********************************************************************************************************************
+
+MACRO(macro_install_runtime_artifacts name install_path dependency_set)
+
+    message(STATUS "Installing runtime artifacts for: ${name}")
+
+    # Installation process into installation dir.
+    install(IMPORTED_RUNTIME_ARTIFACTS ${name}
+            RUNTIME_DEPENDENCY_SET ${dependency_set}
+            DESTINATION ${install_path})
+
+ENDMACRO()
+
+# **********************************************************************************************************************
+
+
+
 MACRO(macro_install_lib lib_name cfg_name inc_path
       inc_dest lib_dest bin_dest arch_dest sha_dest)
 
     # Log
-    message(STATUS "${Green}Installing library: ${lib_name} ${ColourReset}")
+    message(STATUS "Installing library: ${lib_name}")
 
     # Install the include files to the specified install directory.
     install(DIRECTORY ${inc_path}
@@ -114,19 +149,7 @@ MACRO(macro_install_lib lib_name cfg_name inc_path
 
 ENDMACRO()
 
-# **********************************************************************************************************************
 
-MACRO(macro_install_artifacts lib_name dep_set artf_dest)
-
-    # Log
-    message(STATUS "${Green}Installing runtime artifacts for: ${lib_name} ${ColourReset}")
-
-    # Runtime artifacts.
-    install(IMPORTED_RUNTIME_ARTIFACTS ${lib_name}
-            RUNTIME_DEPENDENCY_SET ${dep_set}
-            DESTINATION ${artf_dest})
-
-ENDMACRO()
 
 # **********************************************************************************************************************
 

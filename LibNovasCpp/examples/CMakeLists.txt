@@ -10,13 +10,7 @@
 #
 # Examples configuration
 
-
-# Path to examples folder.
-#set(LIB_EXAMPLES_FOLDER)
-
 # Add all the basic examples.
-macro_setup_lib_basic_examples(${MODULES_GLOBAL_LIBS})
+macro_setup_lib_basic_examples(${CMAKE_CURRENT_SOURCE_DIR})
 
-
-
-
+# ----------------------------------------------------------------------------------------------------------------------

@@ -4,7 +4,7 @@
 
 # **********************************************************************************************************************
 
-# NOTE:Add all resources as last arguments.
+# Note: Add all resources as last arguments.
 MACRO(macro_setup_shared_lib lib_name lib_includes_dir)
 
     # Combine all additional arguments into a single list of resources.
@@ -25,11 +25,21 @@ MACRO(macro_setup_shared_lib lib_name lib_includes_dir)
                                $<BUILD_INTERFACE:${lib_includes_dir}/..>
                                $<INSTALL_INTERFACE:include>)
 
+   # Append the new library to global.
+   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+       macro_global_add_libs_debug("${lib_name}")
+   else()
+       macro_global_add_libs_optimized("${lib_name}")
+   endif()
+
+   # Define the global dependency set name.
+   macro_global_set_main_dep_set_name("${lib_name}_deps")
+
 ENDMACRO()
 
 # **********************************************************************************************************************
 
-MACRO(macro_setup_lib_basic_examples lib_dependencies)
+MACRO(macro_setup_lib_basic_examples examples_path)
 
     # Log.
     message(STATUS "Setup library examples...")
@@ -38,36 +48,36 @@ MACRO(macro_setup_lib_basic_examples lib_dependencies)
     set(APP_BUILD_FOLDER ${CMAKE_BINARY_DIR}/bin/Examples/)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${APP_BUILD_FOLDER})
 
-    # Empty lib lists.
-    set(LIB_DEB)
-    set(LIB_OPT)
-
-    # Setup the library.
-    # Check if debug or release.
-    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(LIB_DEB ${LIB_NAME})
-    else()
-        set(LIB_OPT ${LIB_NAME})
-    endif()
-
     # List of basic tests.
-    file(GLOB EXAMPLE_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+    file(GLOB EXAMPLE_SOURCES "${examples_path}/*.cpp")
 
     # Loop through the test names and configure each basic test.
     foreach(EXAMPLE_SOURCE_FILE ${EXAMPLE_SOURCES})
+
+        # Get the test name and source.
         get_filename_component(EXAMPLE_NAME ${EXAMPLE_SOURCE_FILE} NAME_WE)
         set(SOURCES ${EXAMPLE_NAME}.cpp)
-        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${APP_BUILD_FOLDER})
-        # Call the macro to set up the test
-        #macro_setup_deploy_launcher("${EXAMPLE_NAME}" "${INSTALL_BIN}" "${LIB_DEPS_SET}")
 
+        # Include the external resources.
         if(MODULES_GLOBAL_SHOW_EXTERNALS)
             file(GLOB_RECURSE EXTERN ${CMAKE_SOURCE_DIR}/includes/*.h)
         endif()
 
-        macro_setup_launcher_deploy("${EXAMPLE_NAME}" "${LIB_OPT}" "${LIB_DEB}" "${INSTALL_BIN}" "${LIB_DEPS_SET}"
-                                    "${SOURCES}" "${EXTERN}")
+        # Setup the launcher.
+        macro_setup_launcher("${EXAMPLE_NAME}"
+                             "${MODULES_GLOBAL_LIBS_OPTIMIZED}"
+                             "${MODULES_GLOBAL_LIBS_DEBUG}"
+                             "${SOURCES}" "${EXTERN}")
 
+        # Install the launcher.
+        macro_install_launcher(${EXAMPLE_NAME} ${MODULES_GLOBAL_INSTALL_BIN_PATH})
+
+        # Install runtime artifacts.
+        macro_install_runtime_artifacts(${EXAMPLE_NAME}
+                                        ${MODULES_GLOBAL_INSTALL_BIN_PATH}
+                                        ${MODULES_GLOBAL_MAIN_DEP_SET_NAME})
+
+        # Include directories for the target.
         target_include_directories(${EXAMPLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/includes)
 
     endforeach()

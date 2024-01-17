@@ -16,7 +16,7 @@ project(_)
 
 # Set path to additional CMake modules.
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMakeModules ${CMAKE_MODULE_PATH})
-include(CMakeMacrosInit)
+include(CMakeMacrosGlobals)
 
 # Init CMake modules.
 macro_cmakemodules_init()
@@ -35,6 +35,7 @@ set(LIB_CMAKE_CONFIG_NAME ${LIB_NAME}_config)
 macro_global_set_show_externals(TRUE)
 macro_global_set_force_install_dir(TRUE)
 macro_global_set_install_ext_deps(TRUE)
+macro_global_set_install_runtime_artifacts(TRUE)
 
 # Setup the base project.
 macro_setup_base_project(${LIB_NAME} ${LIB_VER} ${LIB_BUILD_MODE})
@@ -44,7 +45,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 
 # Setup the install directory for each compiler and operating system.
-macro_setup_install_dir(${LIB_INSTALL_DIR} INSTALL_BIN INSTALL_LIB INSTALL_SHARE INSTALL_INCLUDE)
+macro_setup_install_dir(${LIB_INSTALL_DIR})
 
 # ----------------------------------------------------------------------------------------------------------------------
 # SPECIFIC PROJECT CONFIGURATION
@@ -52,7 +53,6 @@ macro_setup_install_dir(${LIB_INSTALL_DIR} INSTALL_BIN INSTALL_LIB INSTALL_SHARE
 # Specific configuration.
 set(LIB_INCLUDES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/includes/${LIB_NAME})
 set(LIB_SOURCES_DIR ${CMAKE_SOURCE_DIR}/sources)
-set(LIB_DEPS_SET ${LIB_NAME}_deps)
 
 # Configure the SOLAR SYSTEM version to be used.
 # NOTE: Remember compile Fortran code if you want to use full accuracy mode.
@@ -90,27 +90,36 @@ if (MINGW)
     target_link_libraries(${LIB_NAME} PRIVATE -static-libgcc -static-libstdc++ -static -lpthread)
 endif()
 
+# ----------------------------------------------------------------------------------------------------------------------
+# CONFIGURE THE SUBPROJECTS
 
+# Setup the project installation directory.
 
-
-
-# Add the diferents subprojects directories.
-macro_setup_global_libs("${LIB_NAME}")
 
 add_subdirectory(examples)
 #add_subdirectory(utilities)
 
+
+
 # Installation process.
 if(WIN32)
 
-    macro_install_lib(${LIB_NAME} ${LIB_CMAKE_CONFIG_NAME} ${LIB_INCLUDES_DIR} ${INSTALL_INCLUDE}
-                      ${INSTALL_LIB} ${INSTALL_LIB} ${INSTALL_LIB} ${INSTALL_SHARE})
+    macro_install_lib(${LIB_NAME} ${LIB_CMAKE_CONFIG_NAME} ${LIB_INCLUDES_DIR}
+                      ${MODULES_GLOBAL_INSTALL_INCLUDE_PATH}
+                      ${MODULES_GLOBAL_INSTALL_BIN_PATH}
+                      ${MODULES_GLOBAL_INSTALL_LIB_PATH}
+                      ${MODULES_GLOBAL_INSTALL_LIB_PATH}
+                      ${MODULES_GLOBAL_INSTALL_SHARE_PATH})
 
-    macro_install_artifacts(${LIB_NAME} ${LIB_DEPS_SET} ${INSTALL_BIN})
+    macro_install_runtime_artifacts(${LIB_NAME}
+                                    ${MODULES_GLOBAL_MAIN_DEP_SET_NAME}
+                                    ${MODULES_GLOBAL_INSTALL_BIN_PATH})
 
     if(${MODULES_GLOBAL_INSTALL_EXT_DEPS})
         set(EXC_REGEXES "api-ms-" "ext-ms-")
-        macro_install_ext_deps(${LIB_DEPS_SET} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} ${INSTALL_BIN} "${EXC_REGEXES}")
+        macro_install_ext_deps(${MODULES_GLOBAL_MAIN_DEP_SET_NAME}
+            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+            ${MODULES_GLOBAL_INSTALL_BIN_PATH} "${EXC_REGEXES}")
     endif()
     
 elseif(OS_NAME STREQUAL "Linux/Unix")
@@ -118,9 +127,9 @@ elseif(OS_NAME STREQUAL "Linux/Unix")
     macro_install_lib(${LIB_NAME} ${LIB_CMAKE_CONFIG_NAME} ${LIB_INCLUDES_DIR} ${INSTALL_INCLUDE}
                       ${INSTALL_LIB} ${INSTALL_LIB} ${INSTALL_LIB} ${INSTALL_SHARE})
                       
-    macro_install_artifacts(${LIB_NAME} ${LIB_DEPS_SET} ${INSTALL_BIN})
+    macro_install_runtime_artifacts(${LIB_NAME} ${LIB_DEPS_SET} ${INSTALL_BIN})
     
-    if(${INSTALL_EXT_DEPS})
+    if(${MODULES_GLOBAL_INSTALL_EXT_DEPS})
         macro_install_ext_deps(${LIB_DEPS_SET} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} ${INSTALL_BIN} "${EXC_REGEXES}")
     endif()
                   
