@@ -34,8 +34,9 @@ set(LIB_CMAKE_CONFIG_NAME ${LIB_NAME}_config)
 # Macros global configuration.
 macro_global_set_show_externals(TRUE)
 macro_global_set_force_install_dir(TRUE)
-macro_global_set_install_ext_deps(TRUE)
+macro_global_set_install_runtime_deps(TRUE)
 macro_global_set_install_runtime_artifacts(TRUE)
+macro_global_set_exclude_so_libraries(TRUE)
 
 # Setup the base project.
 macro_setup_base_project(${LIB_NAME} ${LIB_VER} ${LIB_BUILD_MODE})
@@ -77,7 +78,7 @@ macro_setup_shared_lib(${LIB_NAME} ${LIB_INCLUDES_DIR} ${SOURCES} ${HEADERS})
 
 # Configure the compilers.
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -O3")
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -m64 -O3")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(${LIB_NAME} PUBLIC)
 else()
@@ -91,48 +92,16 @@ if (MINGW)
 endif()
 
 # ----------------------------------------------------------------------------------------------------------------------
-# CONFIGURE THE SUBPROJECTS
-
-# Setup the project installation directory.
-
-
-add_subdirectory(examples)
-#add_subdirectory(utilities)
-
-
+# INSTALLATION PROCESS
 
 # Installation process.
-if(WIN32)
+macro_default_library_installation(${LIB_NAME} ${LIB_CMAKE_CONFIG_NAME} ${LIB_INCLUDES_DIR})
 
-    macro_install_lib(${LIB_NAME} ${LIB_CMAKE_CONFIG_NAME} ${LIB_INCLUDES_DIR}
-                      ${MODULES_GLOBAL_INSTALL_INCLUDE_PATH}
-                      ${MODULES_GLOBAL_INSTALL_BIN_PATH}
-                      ${MODULES_GLOBAL_INSTALL_LIB_PATH}
-                      ${MODULES_GLOBAL_INSTALL_LIB_PATH}
-                      ${MODULES_GLOBAL_INSTALL_SHARE_PATH})
+# ----------------------------------------------------------------------------------------------------------------------
+# CONFIGURE THE SUBPROJECTS
 
-    macro_install_runtime_artifacts(${LIB_NAME}
-                                    ${MODULES_GLOBAL_MAIN_DEP_SET_NAME}
-                                    ${MODULES_GLOBAL_INSTALL_BIN_PATH})
+# Example subproject.
+add_subdirectory(examples)
 
-    if(${MODULES_GLOBAL_INSTALL_EXT_DEPS})
-        set(EXC_REGEXES "api-ms-" "ext-ms-")
-        macro_install_ext_deps(${MODULES_GLOBAL_MAIN_DEP_SET_NAME}
-            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-            ${MODULES_GLOBAL_INSTALL_BIN_PATH} "${EXC_REGEXES}")
-    endif()
-    
-elseif(OS_NAME STREQUAL "Linux/Unix")
-
-    macro_install_lib(${LIB_NAME} ${LIB_CMAKE_CONFIG_NAME} ${LIB_INCLUDES_DIR} ${INSTALL_INCLUDE}
-                      ${INSTALL_LIB} ${INSTALL_LIB} ${INSTALL_LIB} ${INSTALL_SHARE})
-                      
-    macro_install_runtime_artifacts(${LIB_NAME} ${LIB_DEPS_SET} ${INSTALL_BIN})
-    
-    if(${MODULES_GLOBAL_INSTALL_EXT_DEPS})
-        macro_install_ext_deps(${LIB_DEPS_SET} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} ${INSTALL_BIN} "${EXC_REGEXES}")
-    endif()
-                  
-else()
-    message(FATAL_ERROR "Operating system not supported by default.")
-endif()
+# Utilities subproject.
+#add_subdirectory(utilities)

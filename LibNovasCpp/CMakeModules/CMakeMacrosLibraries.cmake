@@ -1,5 +1,5 @@
 # **********************************************************************************************************************
-# Updated 12/01/2024
+# Updated 18/01/2024
 # **********************************************************************************************************************
 
 # **********************************************************************************************************************
@@ -39,7 +39,7 @@ ENDMACRO()
 
 # **********************************************************************************************************************
 
-MACRO(macro_setup_lib_basic_examples examples_path)
+MACRO(macro_setup_lib_basic_examples examples_sources_path examples_install_path)
 
     # Log.
     message(STATUS "Setup library examples...")
@@ -49,7 +49,7 @@ MACRO(macro_setup_lib_basic_examples examples_path)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${APP_BUILD_FOLDER})
 
     # List of basic tests.
-    file(GLOB EXAMPLE_SOURCES "${examples_path}/*.cpp")
+    file(GLOB EXAMPLE_SOURCES "${examples_sources_path}/*.cpp")
 
     # Loop through the test names and configure each basic test.
     foreach(EXAMPLE_SOURCE_FILE ${EXAMPLE_SOURCES})
@@ -69,16 +69,23 @@ MACRO(macro_setup_lib_basic_examples examples_path)
                              "${MODULES_GLOBAL_LIBS_DEBUG}"
                              "${SOURCES}" "${EXTERN}")
 
+        # Include directories for the target.
+        target_include_directories(${EXAMPLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/includes)
+
         # Install the launcher.
-        macro_install_launcher(${EXAMPLE_NAME} ${MODULES_GLOBAL_INSTALL_BIN_PATH})
+        macro_install_launcher(${EXAMPLE_NAME} ${examples_install_path})
 
         # Install runtime artifacts.
         macro_install_runtime_artifacts(${EXAMPLE_NAME}
-                                        ${MODULES_GLOBAL_INSTALL_BIN_PATH}
-                                        ${MODULES_GLOBAL_MAIN_DEP_SET_NAME})
+                                        ${MODULES_GLOBAL_MAIN_DEP_SET_NAME}
+                                        ${examples_install_path})
 
-        # Include directories for the target.
-        target_include_directories(${EXAMPLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/includes)
+        # Install the runtime dependencies.
+        macro_install_runtime_deps("${EXAMPLE_NAME}"
+                                   "${MODULES_GLOBAL_MAIN_DEP_SET_NAME}"
+                                   "${CMAKE_BINARY_DIR}/bin"
+                                   "${examples_install_path}"
+                                   "" "")
 
     endforeach()
 

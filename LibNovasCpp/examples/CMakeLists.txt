@@ -10,7 +10,10 @@
 #
 # Examples configuration
 
+# Set the installation example path.
+set(EXAMPLE_INSTALL_PATH ${MODULES_GLOBAL_INSTALL_BIN_PATH}/examples)
+
 # Add all the basic examples.
-macro_setup_lib_basic_examples(${CMAKE_CURRENT_SOURCE_DIR})
+macro_setup_lib_basic_examples(${CMAKE_CURRENT_SOURCE_DIR} ${EXAMPLE_INSTALL_PATH})
 
 # ----------------------------------------------------------------------------------------------------------------------
