@@ -32,7 +32,7 @@ set(LIB_INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../${LIB_NAME}_product_v${LIB_VE
 set(LIB_CMAKE_CONFIG_NAME ${LIB_NAME}_config)
 
 # Macros global configuration.
-macro_global_set_show_externals(TRUE)
+macro_global_set_show_externals(FALSE)
 macro_global_set_force_install_dir(TRUE)
 macro_global_set_install_runtime_deps(TRUE)
 macro_global_set_install_runtime_artifacts(TRUE)
@@ -104,4 +104,6 @@ macro_default_library_installation(${LIB_NAME} ${LIB_CMAKE_CONFIG_NAME} ${LIB_IN
 add_subdirectory(examples)
 
 # Utilities subproject.
-#add_subdirectory(utilities)
+add_subdirectory(utilities)
+
+# ----------------------------------------------------------------------------------------------------------------------
