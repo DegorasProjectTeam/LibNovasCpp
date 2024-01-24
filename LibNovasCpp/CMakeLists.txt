@@ -29,7 +29,7 @@ set(LIB_NAME LibNovasCpp)
 set(LIB_VER 3.1) # 3.1 is NOVAS C3.1
 set(LIB_BUILD_MODE Debug)
 set(LIB_INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../${LIB_NAME}_product_v${LIB_VER})
-set(LIB_CMAKE_CONFIG_NAME ${LIB_NAME}_config)
+set(LIB_LANGUAGES CXX C)
 
 # Macros global configuration.
 macro_global_set_show_externals(FALSE)
@@ -39,14 +39,14 @@ macro_global_set_install_runtime_artifacts(TRUE)
 macro_global_set_exclude_so_libraries(TRUE)
 
 # Setup the base project.
-macro_setup_base_project(${LIB_NAME} ${LIB_VER} ${LIB_BUILD_MODE})
+macro_setup_base_project(${LIB_NAME} ${LIB_VER} ${LIB_BUILD_MODE} ${LIB_LANGUAGES})
 
 # Other configurations.
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 
 # Setup the install directory for each compiler and operating system.
-macro_setup_install_dir(${LIB_INSTALL_DIR})
+macro_setup_default_install_dir(${LIB_INSTALL_DIR})
 
 # ----------------------------------------------------------------------------------------------------------------------
 # SPECIFIC PROJECT CONFIGURATION
@@ -71,7 +71,7 @@ file(GLOB SOURCES ${CMAKE_SOURCE_DIR}/sources/*.c)
 set(SOURCES ${SOURCES} ${SOLSYS_SOURCE})
 
 # Setup the shared library.
-macro_setup_shared_lib(${LIB_NAME} ${LIB_INCLUDES_DIR} ${SOURCES} ${HEADERS})
+macro_setup_shared_lib(${LIB_NAME} ${LIB_INCLUDES_DIR} ${PROJECT_VERSION} ${SOURCES} ${HEADERS})
 
 # ----------------------------------------------------------------------------------------------------------------------
 # CONFIGURE THE COMPILERS
@@ -95,7 +95,7 @@ endif()
 # INSTALLATION PROCESS
 
 # Installation process.
-macro_default_library_installation(${LIB_NAME} ${LIB_CMAKE_CONFIG_NAME} ${LIB_INCLUDES_DIR})
+macro_default_library_installation(${LIB_NAME} ${LIB_INCLUDES_DIR})
 
 # ----------------------------------------------------------------------------------------------------------------------
 # CONFIGURE THE SUBPROJECTS

@@ -1,13 +1,13 @@
 # **********************************************************************************************************************
-# Updated 19/01/2024
+# Updated 24/01/2024
 # **********************************************************************************************************************
 
 # **********************************************************************************************************************
 
-MACRO(macro_setup_install_dir base_dir)
+MACRO(macro_setup_default_install_dir base_dir)
 
     # Log
-    message(STATUS "Preparing the installation directory... ")
+    message(STATUS "Preparing the default installation directory... ")
 
     # Resolve the path
     get_filename_component(real_base_dir "${base_dir}" REALPATH)
@@ -18,47 +18,22 @@ MACRO(macro_setup_install_dir base_dir)
         set(CMAKE_INSTALL_PREFIX ${real_base_dir} CACHE PATH "..." FORCE)
     endif()
 
-    message(STATUS "  Setting base installation directory: ${real_base_dir}")
-
     # Add properties for clean process.
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_INSTALL_PREFIX})
 
-    # Check if 64-bit
-    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-        set(ARCH "x86_64")
-    else()
-        set(ARCH "x86")
-    endif()
-
-    # Check if debug or release.
-    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(BUILD_TYPE "debug")
-    else()
-        set(BUILD_TYPE "release")
-    endif()
-
-    # Get the compiler version.
-    set(COMP_V "${CMAKE_CXX_COMPILER_VERSION}")
-
-    # Check the compiler name.
-    if(MINGW)
-        set(COMP_N "mingw")
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-        set(COMP_N "msvc")
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        set(COMP_N "gnu")
-    else()
-        message(FATAL_ERROR "  Compiler not supported by default.")
-    endif()
+    # Compose the folder name
+    macro_compose_current_architecture_folder_name(INSTALL_FOLDER)
 
     # Define the install directories.
-    set(BIN_DIR ${CMAKE_INSTALL_PREFIX}/bin/${COMP_N}-${ARCH}-${COMP_V}-${BUILD_TYPE})
-    set(LIB_DIR ${CMAKE_INSTALL_PREFIX}/lib/${COMP_N}-${ARCH}-${COMP_V}-${BUILD_TYPE})
-    set(SHA_DIR ${CMAKE_INSTALL_PREFIX}/share/${COMP_N}-${ARCH}-${COMP_V}-${BUILD_TYPE})
-    set(INC_DIR ${CMAKE_INSTALL_PREFIX}/include)
+    set(BIN_DIR ${CMAKE_INSTALL_PREFIX}/${INSTALL_FOLDER}/bin)
+    set(LIB_DIR ${CMAKE_INSTALL_PREFIX}/${INSTALL_FOLDER}/lib)
+    set(SHA_DIR ${CMAKE_INSTALL_PREFIX}/${INSTALL_FOLDER}/share)
+    set(INC_DIR ${CMAKE_INSTALL_PREFIX}/${INSTALL_FOLDER}/include)
 
     # Specific SO configurations.        
     if(WIN32)
+    #
+    # Nothing specific.
     #
     elseif(OS_NAME STREQUAL "Linux/Unix")
     
@@ -72,7 +47,8 @@ MACRO(macro_setup_install_dir base_dir)
         set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
         set(CMAKE_INSTALL_RPATH ${BIN_DIR})
          
-        # Add the automatically determined parts of the RPATH which point to directories outside the build tree.
+        # Add the automatically determined parts of the RPATH which point to
+        # directories outside the build tree.
         set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
                   
     else()
@@ -185,8 +161,7 @@ ENDMACRO()
 
 # **********************************************************************************************************************
 
-MACRO(macro_install_lib lib_name cfg_name inc_path
-      inc_dest lib_dest bin_dest arch_dest sha_dest)
+MACRO(macro_install_lib lib_name inc_path inc_dest lib_dest bin_dest arch_dest sha_dest)
 
     # Log
     message(STATUS "Installing library: ${lib_name}")
@@ -196,33 +171,41 @@ MACRO(macro_install_lib lib_name cfg_name inc_path
     message(STATUS "  Archive destination: ${arch_dest}")
     message(STATUS "  Shared destination: ${sha_dest}")
 
+    # Config names.
+    set(CONFIG_FILE_NAME "${lib_name}Config")
+    set(VERSION_FILE_NAME "${lib_name}ConfigVersion.cmake")
+
     # Install the include files to the specified install directory.
     install(DIRECTORY ${inc_path}
             DESTINATION ${inc_dest}
             PATTERN "*.txt" EXCLUDE)
 
+    write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/${VERSION_FILE_NAME}"
+                                     VERSION 0.48.89
+                                     COMPATIBILITY SameMajorVersion)
+
     # Install the binaries to the specified install directory.
     # In Windows is ok install the dll in the lib folder.
-    install(TARGETS ${lib_name} EXPORT ${cfg_name}
+    install(TARGETS ${lib_name} EXPORT ${CONFIG_FILE_NAME}
             LIBRARY DESTINATION ${lib_dest}
             ARCHIVE DESTINATION ${arch_dest}
             RUNTIME DESTINATION ${bin_dest})
 
     # Export the configuration.
-    message(STATUS "  Exporting the configuration file: ${cfg_name} in ${sha_dest}/cmake")
-    install(EXPORT ${cfg_name} DESTINATION ${sha_dest}/cmake)
+    install(EXPORT ${CONFIG_FILE_NAME} DESTINATION ${sha_dest}/cmake)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${VERSION_FILE_NAME}" DESTINATION ${sha_dest}/cmake)
 
 ENDMACRO()
 
 # **********************************************************************************************************************
 
-MACRO(macro_default_library_installation lib_name lib_cmake_config_name lib_includes_dir)
+MACRO(macro_default_library_installation lib_name lib_includes_dir)
 
     # Default installation process for windows.
     if(WIN32)
 
         # Install the library.
-        macro_install_lib(${lib_name} ${lib_cmake_config_name} ${lib_includes_dir}
+        macro_install_lib(${lib_name} ${CMAKE_CONFIG_NAME} ${lib_includes_dir}
                           ${MODULES_GLOBAL_INSTALL_INCLUDE_PATH}
                           ${MODULES_GLOBAL_INSTALL_BIN_PATH}
                           ${MODULES_GLOBAL_INSTALL_LIB_PATH}
@@ -244,7 +227,7 @@ MACRO(macro_default_library_installation lib_name lib_cmake_config_name lib_incl
     elseif(OS_NAME STREQUAL "Linux/Unix")
 
         # Install the library.
-        macro_install_lib(${lib_name} ${lib_cmake_config_name} ${lib_includes_dir}
+        macro_install_lib(${lib_name} ${lib_includes_dir}
                           ${MODULES_GLOBAL_INSTALL_INCLUDE_PATH}
                           ${MODULES_GLOBAL_INSTALL_LIB_PATH}
                           ${MODULES_GLOBAL_INSTALL_LIB_PATH}

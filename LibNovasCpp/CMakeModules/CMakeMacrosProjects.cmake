@@ -1,5 +1,5 @@
 # **********************************************************************************************************************
-# Updated 19/01/2024
+# Updated 24/01/2024
 # **********************************************************************************************************************
 
 # **********************************************************************************************************************
@@ -27,6 +27,13 @@ MACRO(macro_setup_base_project project_name project_version project_build_mode)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+    # Check system architectrue.
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(SYS_ARCH "64 bits")
+    elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        set(SYS_ARCH "32 bits")
+    endif()
+
     # Logs.
     if(WIN32)
         set(OS_NAME "Windows")
@@ -41,7 +48,8 @@ MACRO(macro_setup_base_project project_name project_version project_build_mode)
     message(STATUS "  Project Version: ${CMAKE_PROJECT_VERSION}")
     message(STATUS "  C++ Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
     message(STATUS "  Operating System: ${OS_NAME}")
-    message(STATUS "  System Architecture: ${CMAKE_SYSTEM_PROCESSOR}")
+    message(STATUS "  Processor Architecture: ${CMAKE_SYSTEM_PROCESSOR}")
+    message(STATUS "  System Architecture: ${SYS_ARCH}")
     message(STATUS "  Build Type: ${CMAKE_BUILD_TYPE}")
     message(STATUS "  Build Archive: ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
     message(STATUS "  Build Library: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
