@@ -1,5 +1,5 @@
 # **********************************************************************************************************************
-# Updated 24/01/2024
+# Updated 29/01/2024
 # **********************************************************************************************************************
 
 # **********************************************************************************************************************
@@ -163,7 +163,7 @@ ENDMACRO()
 
 MACRO(macro_install_lib lib_name inc_path inc_dest lib_dest bin_dest arch_dest sha_dest)
 
-    # Log
+    # Log information
     message(STATUS "Installing library: ${lib_name}")
     message(STATUS "  Includes destination: ${inc_dest}")
     message(STATUS "  Library destination: ${lib_dest}")
@@ -171,29 +171,63 @@ MACRO(macro_install_lib lib_name inc_path inc_dest lib_dest bin_dest arch_dest s
     message(STATUS "  Archive destination: ${arch_dest}")
     message(STATUS "  Shared destination: ${sha_dest}")
 
-    # Config names.
-    set(CONFIG_FILE_NAME "${lib_name}Config")
+    # Config and version file names
+    set(CONFIG_FILE_NAME "${lib_name}Config.cmake")
     set(VERSION_FILE_NAME "${lib_name}ConfigVersion.cmake")
 
-    # Install the include files to the specified install directory.
+    # Set target properties for include directories
+    target_include_directories(${lib_name} PUBLIC
+        $<BUILD_INTERFACE:${inc_path}>
+        $<INSTALL_INTERFACE:${inc_dest}>
+    )
+
+    # Install include files
     install(DIRECTORY ${inc_path}
             DESTINATION ${inc_dest}
             PATTERN "*.txt" EXCLUDE)
 
-    write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/${VERSION_FILE_NAME}"
-                                     VERSION 0.48.89
-                                     COMPATIBILITY SameMajorVersion)
+    # Get the version of the library
+    get_target_property(EXTRACTED_VERSION ${lib_name} VERSION)
 
-    # Install the binaries to the specified install directory.
-    # In Windows is ok install the dll in the lib folder.
-    install(TARGETS ${lib_name} EXPORT ${CONFIG_FILE_NAME}
-            LIBRARY DESTINATION ${lib_dest}
-            ARCHIVE DESTINATION ${arch_dest}
-            RUNTIME DESTINATION ${bin_dest})
+    # Write the version to the package file
+    write_basic_package_version_file(
+        "${CMAKE_CURRENT_BINARY_DIR}/${VERSION_FILE_NAME}"
+        VERSION ${EXTRACTED_VERSION}
+        COMPATIBILITY SameMajorVersion
+    )
 
-    # Export the configuration.
-    install(EXPORT ${CONFIG_FILE_NAME} DESTINATION ${sha_dest}/cmake)
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${VERSION_FILE_NAME}" DESTINATION ${sha_dest}/cmake)
+    # Install the library (and binaries if applicable)
+     install(TARGETS ${lib_name}
+             EXPORT ${lib_name}Targets
+             LIBRARY DESTINATION ${lib_dest}
+             ARCHIVE DESTINATION ${arch_dest}
+             RUNTIME DESTINATION ${bin_dest}
+             INCLUDES DESTINATION ${inc_dest}
+     )
+
+     # Export the target
+     install(EXPORT ${lib_name}Targets
+             FILE ${lib_name}Targets.cmake
+             NAMESPACE ${lib_name}::
+             DESTINATION ${sha_dest}/cmake
+     )
+
+     # Manually create the Config.cmake file
+     file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE_NAME}"
+          "include(\${CMAKE_CURRENT_LIST_DIR}/${lib_name}Targets.cmake)\n"
+     )
+
+     # Install the manually created Config.cmake file
+     install(
+         FILES "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE_NAME}"
+         DESTINATION ${sha_dest}/cmake
+     )
+
+     # Install the version file
+     install(
+         FILES "${CMAKE_CURRENT_BINARY_DIR}/${VERSION_FILE_NAME}"
+         DESTINATION ${sha_dest}/cmake
+     )
 
 ENDMACRO()
 
@@ -205,7 +239,8 @@ MACRO(macro_default_library_installation lib_name lib_includes_dir)
     if(WIN32)
 
         # Install the library.
-        macro_install_lib(${lib_name} ${CMAKE_CONFIG_NAME} ${lib_includes_dir}
+        macro_install_lib(${lib_name}
+                          ${lib_includes_dir}
                           ${MODULES_GLOBAL_INSTALL_INCLUDE_PATH}
                           ${MODULES_GLOBAL_INSTALL_BIN_PATH}
                           ${MODULES_GLOBAL_INSTALL_LIB_PATH}

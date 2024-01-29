@@ -15,16 +15,11 @@ MACRO(macro_setup_shared_lib lib_name lib_includes_dir lib_version)
     add_library(${lib_name} SHARED ${resources})
     set_target_properties(${lib_name} PROPERTIES VERSION ${lib_version})
     target_compile_definitions(${lib_name} PRIVATE -D${LIB_NAME_UPPER}_LIBRARY)
+    include_directories(${lib_includes_dir})
 
     # Log.
     get_target_property(extracted_version ${lib_name} VERSION)
     message(STATUS "Setup shared library: ${lib_name}, Version: ${extracted_version}")
-
-    # Add the includes.
-    target_include_directories(${lib_name} PUBLIC
-                               $<BUILD_INTERFACE:${lib_includes_dir}>
-                               $<BUILD_INTERFACE:${lib_includes_dir}/..>
-                               $<INSTALL_INTERFACE:include>)
 
    # Append the new library to global.
    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -52,23 +47,18 @@ MACRO(macro_setup_lib_basic_examples examples_sources_path examples_install_path
     # List of basic tests.
     file(GLOB EXAMPLE_SOURCES "${examples_sources_path}/*.cpp")
 
-    # Loop through the test names and configure each basic test.
+    # Loop through the example names and configure each basic example.
     foreach(EXAMPLE_SOURCE_FILE ${EXAMPLE_SOURCES})
 
-        # Get the test name and source.
+        # Get the example name and source.
         get_filename_component(EXAMPLE_NAME ${EXAMPLE_SOURCE_FILE} NAME_WE)
         set(SOURCES ${EXAMPLE_NAME}.cpp)
-
-        # Include the external resources.
-        if(MODULES_GLOBAL_SHOW_EXTERNALS)
-            file(GLOB_RECURSE EXTERN ${CMAKE_SOURCE_DIR}/includes/*.h)
-        endif()
 
         # Setup the launcher.
         macro_setup_launcher("${EXAMPLE_NAME}"
                              "${MODULES_GLOBAL_LIBS_OPTIMIZED}"
                              "${MODULES_GLOBAL_LIBS_DEBUG}"
-                             "${SOURCES}" "${EXTERN}")
+                             "${SOURCES}")
 
         # Include directories for the target.
         target_include_directories(${EXAMPLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/includes)

@@ -1,5 +1,5 @@
 # **********************************************************************************************************************
-# Updated 12/01/2024
+# Updated 29/01/2024
 # **********************************************************************************************************************
 
 # **********************************************************************************************************************
@@ -7,7 +7,6 @@
 # **********************************************************************************************************************
 
 # ----------------------------------------------------------------------------------------------------------------------
-#
 # INITIALIZATION
 
 # Cmake minimum and empty project for avoid warnings.
@@ -63,7 +62,7 @@ set(SOLSYS3 ${LIB_SOURCES_DIR}/solsys/solsys3.c)
 set(SOLSYS_SOURCE ${SOLSYS3})
 
 # ----------------------------------------------------------------------------------------------------------------------
-# ADD THE SHARED LIBRARY
+# SETUP THE SHARED LIBRARY
 
 # Get the headers, sources and template files.
 file(GLOB_RECURSE HEADERS ${CMAKE_SOURCE_DIR}/includes/*.h)
@@ -71,7 +70,7 @@ file(GLOB SOURCES ${CMAKE_SOURCE_DIR}/sources/*.c)
 set(SOURCES ${SOURCES} ${SOLSYS_SOURCE})
 
 # Setup the shared library.
-macro_setup_shared_lib(${LIB_NAME} ${LIB_INCLUDES_DIR} ${PROJECT_VERSION} ${SOURCES} ${HEADERS})
+macro_setup_shared_lib(${LIB_NAME} ${LIB_INCLUDES_DIR} ${LIB_VER} ${SOURCES} ${HEADERS})
 
 # ----------------------------------------------------------------------------------------------------------------------
 # CONFIGURE THE COMPILERS
