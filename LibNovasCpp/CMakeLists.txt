@@ -94,7 +94,7 @@ endif()
 # INSTALLATION PROCESS
 
 # Installation process.
-macro_default_library_installation(${LIB_NAME} ${LIB_INCLUDES_DIR})
+macro_default_library_installation("${LIB_NAME}" "${LIB_INCLUDES_DIR}" "")
 
 # ----------------------------------------------------------------------------------------------------------------------
 # CONFIGURE THE SUBPROJECTS
