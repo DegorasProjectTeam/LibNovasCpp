@@ -30,7 +30,12 @@ The CMakeList is a little complex but it is prepared to be configured in several
 
 - About compilers.
 
-At this momment, this fork has been tested in Windows 10 with MinGW 8.1 for 64 bits and MSVC2019 for 64 bits; and in Ubuntu 22.04 with gcc 11.4.
+At this momment, this fork has been tested in the following platforms:
+
+-- Windows 10 with MinGW 8.1 for 64 bits.
+-- Windows 10 with MinGW 13.1 for 64 bits.
+-- Windows 10 with MSVC2019 for 64 bits.
+-- Ubuntu 22.04 with GCC 11.4.
 
 - Compiling the library.
 
