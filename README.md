@@ -6,7 +6,7 @@
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 <!-- PROJECT LOGO -->
-  <h1 align="center">LibNovasCPP - Naval Observatory Vector Astronomy Software For C++ Compilers</h1>
+  <h1 align="center">LibNovasCPP - Naval Observatory Vector Astronomy Software (For Modern C++ Compilers)</h1>
 
   <p align="center">
     <br />
