@@ -114,9 +114,9 @@ set(CMAKE_MODULE_PATH
 
 # [ETC MORE PROJECT CONFIGURATIONS]...
 
-# Configure the LibNovasCPP package.
+# Configure the LibNovasCPP package (version 3.1.1).
 include(ConfigLibNovasCpp)
-macro_configure_libnovascpp_default("3.1" EXACT "" "")
+macro_configure_libnovascpp_default("3.1.1" EXACT "" "")
 
 # [ETC MORE PROJECT CONFIGURATIONS] 
 # At this point we must have already created a target (library or executable).
