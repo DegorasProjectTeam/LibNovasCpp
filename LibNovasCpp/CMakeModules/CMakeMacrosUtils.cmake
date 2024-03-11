@@ -1,5 +1,5 @@
 # **********************************************************************************************************************
-# Updated 13/02/2024
+# Updated 11/03/2024
 # **********************************************************************************************************************
 
 # **********************************************************************************************************************
@@ -71,7 +71,7 @@ MACRO(macro_add_subdirs_recursive curdir ignore_paths)
             endif()
 
             # Recursively call this macro for each subdir, regardless of CMakeLists.txt existence
-            macro_add_subdirs_recursive(${full_subdir_path} ${ignore_paths})
+            macro_add_subdirs_recursive("${full_subdir_path}" "${ignore_paths}")
         endif()
     endforeach()
 ENDMACRO()
