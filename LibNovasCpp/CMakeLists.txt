@@ -14,10 +14,13 @@ cmake_minimum_required(VERSION 3.21)
 project(_)
 
 # Set path to additional CMake modules.
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMakeModules ${CMAKE_MODULE_PATH})
-include(CMakeMacrosGlobals)
+set(CMAKE_MODULE_PATH
+    ${CMAKE_MODULE_PATH}
+    ${CMAKE_SOURCE_DIR}/CMakeModules
+    ${CMAKE_SOURCE_DIR}/CMakeLibsConfig)
 
 # Init CMake modules.
+include(CMakeMacrosGlobals)
 macro_cmakemodules_init()
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -25,7 +28,7 @@ macro_cmakemodules_init()
 
 # Base project configuration.
 set(LIB_NAME LibNovasCpp)
-set(LIB_VER 3.1) # 3.1 is NOVAS C3.1
+set(LIB_VER 3.1.1) # 3.1.x is NOVAS C3.1
 set(LIB_BUILD_MODE Debug)
 set(LIB_INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../${LIB_NAME}_product_v${LIB_VER})
 set(LIB_LANGUAGES CXX C)
@@ -71,6 +74,9 @@ set(SOURCES ${SOURCES} ${SOLSYS_SOURCE})
 
 # Setup the shared library.
 macro_setup_shared_lib(${LIB_NAME} ${LIB_INCLUDES_DIR} ${LIB_VER} ${SOURCES} ${HEADERS})
+
+# Include the shared library CMake configuration file.
+include(ConfigLibNovasCpp)
 
 # ----------------------------------------------------------------------------------------------------------------------
 # CONFIGURE THE COMPILERS
