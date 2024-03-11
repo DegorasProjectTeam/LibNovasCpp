@@ -6,11 +6,11 @@
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 <!-- PROJECT LOGO -->
-  <h1 align="center">LibNovasCPP - Naval Observatory Vector Astronomy Software </h1>
+  <h1 align="center">LibNovasCPP - Naval Observatory Vector Astronomy Software For C++ Compilers</h1>
 
   <p align="center">
     <br />
-    A NOVAS library fork adapted and refactorized to be compiled and installed easily with C++17 modern compilers together with CMake. 
+    A NOVAS (Naval Observatory Vector Astronomy Software) library fork adapted and refactorized to be compiled and installed easily with modern C++ compilers together with CMake. 
     <br />
     <br />
     <br />
