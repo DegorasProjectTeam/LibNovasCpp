@@ -17,6 +17,19 @@
   </p>
 </div>
 
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li><a href="#original-novas-project">Original NOVAS Project</a></li>
+    <li><a href="#about-libnovascpp-project">About LibNOVASCpp Project</a></li>
+    <li><a href="#build-and-installation">Build And Installation</a></li>
+    <li><a href="#external-library-usage">External Library Usage</a></li>
+    <li><a href="#important-notes">Important Notes</a></li>
+    <li><a href="#todos">TODOs</a></li>
+  </ol>
+</details>
+
 <!-- ORIGINAL NOVAS PROJECT -->
 ## Original NOVAS Project
 
@@ -33,7 +46,7 @@ To learn more about NOVAS, visit its original GitHub page.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- ABOUT THE PROJECT -->
-## About LinNOVASCpp Project
+## About LibNOVASCpp Project
 
 This project is a fork ok NOVAS (Naval Observatory Vector Astronomy Software) library (C Edition). 
 
@@ -77,6 +90,39 @@ mkdir build_debug_gnu
 cd build_debug_gnu/
 cmake ../LibNovasCpp
 make install
+```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## External Library Usage
+
+Once the library has been compiled and installed, a product folder will be created with everything necessary to use the library externally, for example in another project.
+
+It is important to mention that when installing the library, a series of CMake configuration files are generated (located in the "share" folder within the installation folder), so it is not possible to move the installation folder to another place once created. If you want to change the location of the installation, we must delete the current folder and perform a new installation configuring the desired path.
+
+### Linking LibNovasCpp in another project
+
+If we have installed the library in the default path or a common or standard path (for example "Program Files" on Windows platforms), we can use CMake's automatic system to easily include and link LibNovasCpp in another project.
+
+To use the automatic system, we will copy the "ConfigLibNovasCpp.cmake" module found in the "CMakeLibsConfig" folder in the root of our new project (or inside a folder if we prefer). Then, in the "CMakeLists.txt" file of our new project, we must include the following instructions (you must replace what is between <> with the correct data). 
+
+```
+# Set path to additional CMake modules.
+set(CMAKE_MODULE_PATH
+    ${CMAKE_MODULE_PATH}
+    ${CMAKE_SOURCE_DIR}/< ConfigLibNovasCpp.cmake FOLDER PATH >)
+
+# [ETC MORE PROJECT CONFIGURATIONS]...
+
+# Configure the LibNovasCPP package.
+include(ConfigLibNovasCpp)
+macro_configure_libnovascpp_default("3.1" EXACT "" "")
+
+# [ETC MORE PROJECT CONFIGURATIONS] 
+# At this point we must have already created a target (library or executable).
+
+# Link with LibNovasCPP. 
+macro_link_libnovascpp_default(${< NAME OF THE TARGET >})
 ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
